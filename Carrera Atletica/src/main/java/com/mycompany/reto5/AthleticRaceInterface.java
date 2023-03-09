@@ -1,6 +1,8 @@
 
-package com.mycompany.retocarreraathletica;
+package com.mycompany.reto5;
 
+
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -10,16 +12,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class AthleticRaceInterface extends JFrame implements ActionListener{
+public class AthleticRaceInterface extends JFrame implements ActionListener {
     JLabel etiregistrarcorredor,eticorredoresregistrados,etiresultados;
     JTextField txtregistrarcorredor,txtcorredoresregistrados,txtresultados;
     JButton registrar,iniciar,reiniciar,terminar;
     JTextArea areacorredoresregistrados,arearesultados;
     JPanel panel;
-    
-    
-    public AthleticRaceInterface(){
+    Runner[] corredores;
+    public int contador = 1;
+      
+    public AthleticRaceInterface() {
         
+        
+        corredores = new Runner[6]; 
         
         etiregistrarcorredor = new JLabel("Registar Corredor");
         etiregistrarcorredor.setBounds(10, 15, 130, 20);
@@ -68,21 +73,23 @@ public class AthleticRaceInterface extends JFrame implements ActionListener{
         panel.add(arearesultados);
         
         add(panel);
-        setSize(500, 500);
+        setBounds(400, 170, 500, 500);
+        setTitle("Carrera Athletica");
         setVisible(true); 
-    
     }
+
     public static void main(String[] args) {
         
         AthleticRaceInterface p= new AthleticRaceInterface();
     }
     @Override
     public void actionPerformed(ActionEvent e) {
+        
         if(e.getSource() == registrar){
         Capturar();
         }
         if(e.getSource() == iniciar){
-            iniciar();
+         iniciar();
         }
         if(e.getSource() == reiniciar){
         reiniciar();
@@ -90,22 +97,45 @@ public class AthleticRaceInterface extends JFrame implements ActionListener{
         if(e.getSource() == terminar){
         terminar();
         }
+        
     }
     
     void Capturar() { 
         
         areacorredoresregistrados.setText(" ");
         if (txtregistrarcorredor.getText().isEmpty()) return;
-        
+        for (int i = 0; i < corredores.length; i++) {
+            if(corredores[i] == null){
+                Runner corredor = new Runner();
+                corredor.setName(txtregistrarcorredor.getText());
+                corredores[i] = corredor;
+                break;           
+            }  
+            }
+            String corredorestxt = "";
+            
+            for (int j = 0; j < corredores.length; j++) {
+                if(corredores[j] != null){
+                    corredorestxt += (j + 1) + ".-" + corredores[j].getName() + "\n";               
+                }
+                areacorredoresregistrados.setText(corredorestxt);
+        } 
+            txtregistrarcorredor.setText("");
     }
+    
     public void iniciar(){
-        String corredorestxt = "";
+        for (int i = 0; i < corredores.length; i++) {
+            Hilo hilo = new Hilo(corredores[i], arearesultados, this);
+            hilo.start();
+        }
+        
     }
     public void reiniciar(){
         areacorredoresregistrados.setText("");
         arearesultados.setText("");
-    }
+        corredores = new Runner[5];    
+    }    
     public void terminar(){
-        System.exit(0);
+        System.exit(0);  
     }
 }
